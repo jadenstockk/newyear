@@ -6,7 +6,7 @@ import logError from "./logError"
 import { getTimeUntilNewYear } from "./timezoneManager"
 
 module.exports = (client: Client) => {
-	let test = true
+	let test = false
 	async function update() {
 		console.log(
 			"Updating countdowns... | " +
@@ -47,6 +47,7 @@ module.exports = (client: Client) => {
 					return
 
 				const msgs = await ch.messages.fetch()
+				if (!msgs) return
 				const message = await msgs.get(data.countdown.messageId)?.edit({
 					embeds: [await generateCountdown(client, data.timezone)]
 				})
@@ -57,6 +58,7 @@ module.exports = (client: Client) => {
 				if (!message) {
 					// Send the initial countdown message and update the guild data
 					const msg = await ch.send({ embeds: [countdown] })
+					if (!msg) return
 
 					data.countdown = {
 						channelId: ch.id,
@@ -64,10 +66,13 @@ module.exports = (client: Client) => {
 						completed: false
 					}
 					await data.save()
-					await msg.pin()
+					await msg
+						.pin()
+						.catch(() => console.log("Failed to pin countdown message"))
 				} else {
 					// Update the countdown message
 					const msg = await message.edit({ embeds: [countdown] })
+					if (!msg) return
 
 					data.countdown = {
 						channelId: ch.id,
@@ -75,7 +80,9 @@ module.exports = (client: Client) => {
 						completed: false
 					}
 					await data.save()
-					await msg.pin()
+					await msg
+						.pin()
+						.catch(() => console.log("Failed to pin countdown message"))
 				}
 
 				if (getTimeUntilNewYear(data.timezone).seconds < 8) {

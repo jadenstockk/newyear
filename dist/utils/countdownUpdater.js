@@ -19,7 +19,7 @@ const countdownGenerator_1 = require("./countdownGenerator");
 const logError_1 = __importDefault(require("./logError"));
 const timezoneManager_1 = require("./timezoneManager");
 module.exports = (client) => {
-    let test = true;
+    let test = false;
     function update() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("Updating countdowns... | " +
@@ -48,6 +48,8 @@ module.exports = (client) => {
                         discord_js_1.PermissionFlagsBits.ViewChannel)))
                         return;
                     const msgs = yield ch.messages.fetch();
+                    if (!msgs)
+                        return;
                     const message = yield ((_b = msgs.get(data.countdown.messageId)) === null || _b === void 0 ? void 0 : _b.edit({
                         embeds: [yield (0, countdownGenerator_1.generateCountdown)(client, data.timezone)]
                     }));
@@ -56,24 +58,32 @@ module.exports = (client) => {
                     if (!message) {
                         // Send the initial countdown message and update the guild data
                         const msg = yield ch.send({ embeds: [countdown] });
+                        if (!msg)
+                            return;
                         data.countdown = {
                             channelId: ch.id,
                             messageId: msg.id,
                             completed: false
                         };
                         yield data.save();
-                        yield msg.pin();
+                        yield msg
+                            .pin()
+                            .catch(() => console.log("Failed to pin countdown message"));
                     }
                     else {
                         // Update the countdown message
                         const msg = yield message.edit({ embeds: [countdown] });
+                        if (!msg)
+                            return;
                         data.countdown = {
                             channelId: ch.id,
                             messageId: msg.id,
                             completed: false
                         };
                         yield data.save();
-                        yield msg.pin();
+                        yield msg
+                            .pin()
+                            .catch(() => console.log("Failed to pin countdown message"));
                     }
                     if ((0, timezoneManager_1.getTimeUntilNewYear)(data.timezone).seconds < 8) {
                         data.countdown.completed = true;
