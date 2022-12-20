@@ -1,6 +1,7 @@
 import { Client, CommandInteraction, REST, Routes } from "discord.js"
 import fs from "node:fs"
 import path from "node:path"
+import logError from "./logError"
 
 interface optionsInterface {
 	testMode: boolean
@@ -81,5 +82,9 @@ export default async function registerCommands(options: optionsInterface) {
 		}
 	} catch (err) {
 		console.error(err)
+		logError(
+			err || "Unknown error in register commands",
+			"Register commands error"
+		)
 	}
 }

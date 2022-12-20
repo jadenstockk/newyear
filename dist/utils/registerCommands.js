@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
+const logError_1 = __importDefault(require("./logError"));
 function registerCommands(options) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!options || options.testMode == undefined) {
@@ -66,6 +67,7 @@ function registerCommands(options) {
         }
         catch (err) {
             console.error(err);
+            (0, logError_1.default)(err || "Unknown error in register commands", "Register commands error");
         }
     });
 }

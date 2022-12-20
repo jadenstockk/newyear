@@ -65,8 +65,7 @@ module.exports = {
 			}
 
 			return await interaction.reply({
-				embeds: [await generateCountdown(interaction.client, timezone)],
-				ephemeral: true
+				embeds: [await generateCountdown(interaction.client, timezone)]
 			})
 		} catch (err) {
 			console.log(err)

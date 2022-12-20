@@ -135,7 +135,7 @@ module.exports = {
                             completed: false
                         };
                         yield data.save();
-                        yield msg.pin().catch(() => console.log(`Failed to pin message`));
+                        yield msg.pin();
                     }
                 });
             }

@@ -10,6 +10,7 @@ import {
 import fs from "node:fs"
 import path from "node:path"
 import { crossEmoji } from "./constants"
+import logError from "./logError"
 import registerCommands from "./registerCommands"
 import { command as typeCommand } from "./types"
 
@@ -47,6 +48,10 @@ module.exports = (client: Client) => {
 			await command.execute(interaction)
 		} catch (err) {
 			console.error(err)
+			logError(
+				err || "Unknown error in commands",
+				"Command Handler: " + (command.name || "Unknown Command")
+			)
 
 			await interaction.reply({
 				embeds: [

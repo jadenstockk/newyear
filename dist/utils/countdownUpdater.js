@@ -16,16 +16,18 @@ const discord_js_1 = require("discord.js");
 const spacetime_1 = __importDefault(require("spacetime"));
 const Guild_1 = __importDefault(require("../models/Guild"));
 const countdownGenerator_1 = require("./countdownGenerator");
+const logError_1 = __importDefault(require("./logError"));
 const timezoneManager_1 = require("./timezoneManager");
 module.exports = (client) => {
-    setTimeout(() => {
-        setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
+    let test = true;
+    function update() {
+        return __awaiter(this, void 0, void 0, function* () {
             console.log("Updating countdowns... | " +
                 spacetime_1.default.now("Africa/Johannesburg").format("nice"));
             try {
                 const guilds = yield Guild_1.default.find();
-                guilds.forEach((data) => __awaiter(void 0, void 0, void 0, function* () {
-                    var _a;
+                guilds.forEach((data) => __awaiter(this, void 0, void 0, function* () {
+                    var _a, _b;
                     if (!data.guildId ||
                         !data.countdown ||
                         !data.countdown.channelId ||
@@ -38,13 +40,17 @@ module.exports = (client) => {
                     const ch = yield guild.channels.fetch(data.countdown.channelId);
                     if (!ch || ch.type !== discord_js_1.ChannelType.GuildText) {
                         data.countdown = undefined;
-                        return yield data.save().catch((err) => console.log(err));
+                        return yield data.save();
                     }
+                    if (!((_a = ch
+                        .permissionsFor(guild.members.me)) === null || _a === void 0 ? void 0 : _a.has(discord_js_1.PermissionFlagsBits.SendMessages &&
+                        discord_js_1.PermissionFlagsBits.EmbedLinks &&
+                        discord_js_1.PermissionFlagsBits.ViewChannel)))
+                        return;
                     const msgs = yield ch.messages.fetch();
-                    const message = yield ((_a = msgs
-                        .get(data.countdown.messageId)) === null || _a === void 0 ? void 0 : _a.edit({
+                    const message = yield ((_b = msgs.get(data.countdown.messageId)) === null || _b === void 0 ? void 0 : _b.edit({
                         embeds: [yield (0, countdownGenerator_1.generateCountdown)(client, data.timezone)]
-                    }).catch((err) => console.log(err)));
+                    }));
                     // Generate the countdown message
                     const countdown = yield (0, countdownGenerator_1.generateCountdown)(client, data.timezone);
                     if (!message) {
@@ -55,7 +61,7 @@ module.exports = (client) => {
                             messageId: msg.id,
                             completed: false
                         };
-                        yield data.save().catch((err) => console.log(err));
+                        yield data.save();
                         yield msg.pin();
                     }
                     else {
@@ -77,7 +83,16 @@ module.exports = (client) => {
             }
             catch (err) {
                 console.error("Countdown Update Error", err);
+                (0, logError_1.default)(err || "Unknown error in countdown updater baseline", "Countdown Updater Baseline");
             }
-        }), 60000);
-    }, 60000 - (new Date().getTime() % 60000));
+        });
+    }
+    setTimeout(() => {
+        if (test) {
+            update();
+        }
+        setInterval(() => {
+            update();
+        }, test ? 20000 : 60000);
+    }, test ? 0 : 60000 - (new Date().getTime() % 60000));
 };

@@ -1,4 +1,10 @@
-import { ActivityType, Client } from "discord.js"
+import {
+	ActivityType,
+	Client,
+	Embed,
+	EmbedBuilder,
+	WebhookClient
+} from "discord.js"
 
 import { config } from "dotenv"
 import registerCommands from "./utils/registerCommands"
@@ -8,7 +14,7 @@ const client = new Client({
 	intents: ["Guilds", "DirectMessages", "DirectMessageReactions"]
 })
 
-client.once("ready", () => {
+client.once("ready", async () => {
 	let count = 0
 	setInterval(() => {
 		switch (count) {
@@ -40,12 +46,27 @@ client.once("ready", () => {
 	require("./utils/commands")(client)
 	require("./utils/countdownUpdater")(client)
 
+	client.on("guildCreate", (guild) => {
+		const logsWebhook = new WebhookClient({ url: process.env.LOGS_WEBHOOK! })
+		logsWebhook.send({
+			embeds: [
+				new EmbedBuilder()
+					.setAuthor({ name: "Joined New Guild" })
+					.setDescription(`Joined guild: ${guild.name} (${guild.id})`)
+					.setTimestamp()
+					.setColor("Green")
+					.setThumbnail(guild.iconURL())
+					.setFooter({ text: (client.user?.username || "Bot") + " Logs" })
+			]
+		})
+	})
+
 	// Update Commands (Customize to suit your needs)
 	if (process.env.REGISTER_COMMANDS === "true") {
 		registerCommands({
-			testMode: false,
+			testMode: true,
 			deletePreviousCommands: true,
-			onlyDelete: false
+			onlyDelete: true
 		})
 	}
 })

@@ -3,3 +3,4 @@ node_modules
 .env.prod
 .env.beta
 yarn-error.log
+.DS_Store

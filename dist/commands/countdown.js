@@ -66,8 +66,7 @@ module.exports = {
                 }
             }
             return yield interaction.reply({
-                embeds: [yield (0, countdownGenerator_1.generateCountdown)(interaction.client, timezone)],
-                ephemeral: true
+                embeds: [yield (0, countdownGenerator_1.generateCountdown)(interaction.client, timezone)]
             });
         }
         catch (err) {

@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -10,7 +19,7 @@ const registerCommands_1 = __importDefault(require("./utils/registerCommands"));
 const client = new discord_js_1.Client({
     intents: ["Guilds", "DirectMessages", "DirectMessageReactions"]
 });
-client.once("ready", () => {
+client.once("ready", () => __awaiter(void 0, void 0, void 0, function* () {
     let count = 0;
     setInterval(() => {
         switch (count) {
@@ -41,13 +50,28 @@ client.once("ready", () => {
     console.log(`Online in ${client.guilds.cache.size} guilds`);
     require("./utils/commands")(client);
     require("./utils/countdownUpdater")(client);
+    client.on("guildCreate", (guild) => {
+        var _a;
+        const logsWebhook = new discord_js_1.WebhookClient({ url: process.env.LOGS_WEBHOOK });
+        logsWebhook.send({
+            embeds: [
+                new discord_js_1.EmbedBuilder()
+                    .setAuthor({ name: "Joined New Guild" })
+                    .setDescription(`Joined guild: ${guild.name} (${guild.id})`)
+                    .setTimestamp()
+                    .setColor("Green")
+                    .setThumbnail(guild.iconURL())
+                    .setFooter({ text: (((_a = client.user) === null || _a === void 0 ? void 0 : _a.username) || "Bot") + " Logs" })
+            ]
+        });
+    });
     // Update Commands (Customize to suit your needs)
     if (process.env.REGISTER_COMMANDS === "true") {
         (0, registerCommands_1.default)({
-            testMode: false,
+            testMode: true,
             deletePreviousCommands: true,
-            onlyDelete: false
+            onlyDelete: true
         });
     }
-});
+}));
 client.login(process.env.TOKEN);

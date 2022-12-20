@@ -17,6 +17,7 @@ const discord_js_1 = require("discord.js");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const constants_1 = require("./constants");
+const logError_1 = __importDefault(require("./logError"));
 module.exports = (client) => {
     let commands = new discord_js_1.Collection();
     const commandsPath = node_path_1.default.join(__dirname, "../commands");
@@ -47,6 +48,7 @@ module.exports = (client) => {
         }
         catch (err) {
             console.error(err);
+            (0, logError_1.default)(err || "Unknown error in commands", "Command Handler: " + (command.name || "Unknown Command"));
             yield interaction.reply({
                 embeds: [
                     new discord_js_1.EmbedBuilder()

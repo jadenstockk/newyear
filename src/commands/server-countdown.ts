@@ -171,7 +171,7 @@ module.exports = {
 						completed: false
 					}
 					await data.save()
-					await msg.pin().catch(() => console.log(`Failed to pin message`))
+					await msg.pin()
 				}
 			}
 
