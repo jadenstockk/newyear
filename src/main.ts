@@ -47,6 +47,8 @@ client.once("ready", async () => {
 	require("./utils/countdownUpdater")(client)
 
 	client.on("guildCreate", (guild) => {
+		console.log("Total guilds:" + client.guilds.cache.size)
+
 		const logsWebhook = new WebhookClient({ url: process.env.LOGS_WEBHOOK! })
 		logsWebhook.send({
 			embeds: [
@@ -62,6 +64,8 @@ client.once("ready", async () => {
 	})
 
 	client.on("guildDelete", (guild) => {
+		console.log("Total guilds:" + client.guilds.cache.size)
+
 		const logsWebhook = new WebhookClient({ url: process.env.LOGS_WEBHOOK! })
 		logsWebhook.send({
 			embeds: [
