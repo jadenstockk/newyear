@@ -56,7 +56,22 @@ client.once("ready", async () => {
 					.setTimestamp()
 					.setColor("Green")
 					.setThumbnail(guild.iconURL())
-					.setFooter({ text: (client.user?.username || "Bot") + " Logs" })
+					.setFooter({ text: `Now in ${client.guilds.cache.size} guilds` })
+			]
+		})
+	})
+
+	client.on("guildDelete", (guild) => {
+		const logsWebhook = new WebhookClient({ url: process.env.LOGS_WEBHOOK! })
+		logsWebhook.send({
+			embeds: [
+				new EmbedBuilder()
+					.setAuthor({ name: "Removed From Guild" })
+					.setDescription(`Removed from guild: ${guild.name} (${guild.id})`)
+					.setTimestamp()
+					.setColor("Red")
+					.setThumbnail(guild.iconURL())
+					.setFooter({ text: `Now in ${client.guilds.cache.size} guilds` })
 			]
 		})
 	})
