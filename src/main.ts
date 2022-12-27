@@ -47,35 +47,35 @@ client.once("ready", async () => {
 	require("./utils/countdownUpdater")(client)
 
 	client.on("guildCreate", (guild) => {
-		console.log("Total guilds:" + client.guilds.cache.size)
+		console.log("Added to guild... Total guilds:" + client.guilds.cache.size)
 
 		const logsWebhook = new WebhookClient({ url: process.env.LOGS_WEBHOOK! })
 		logsWebhook.send({
 			embeds: [
 				new EmbedBuilder()
-					.setAuthor({ name: "Joined New Guild" })
+					.setAuthor({ name: "📥 Joined New Guild" })
 					.setDescription(`Joined guild: ${guild.name} (${guild.id})`)
 					.setTimestamp()
 					.setColor("Green")
 					.setThumbnail(guild.iconURL())
-					.setFooter({ text: `Now in ${client.guilds.cache.size} guilds` })
+					.setFooter({ text: `Total guilds: ${client.guilds.cache.size}` })
 			]
 		})
 	})
 
 	client.on("guildDelete", (guild) => {
-		console.log("Total guilds:" + client.guilds.cache.size)
+		console.log("Removed from guild... Total guilds:" + client.guilds.cache.size)
 
 		const logsWebhook = new WebhookClient({ url: process.env.LOGS_WEBHOOK! })
 		logsWebhook.send({
 			embeds: [
 				new EmbedBuilder()
-					.setAuthor({ name: "Removed From Guild" })
+					.setAuthor({ name: "📤 Removed From Guild" })
 					.setDescription(`Removed from guild: ${guild.name} (${guild.id})`)
 					.setTimestamp()
 					.setColor("Red")
 					.setThumbnail(guild.iconURL())
-					.setFooter({ text: `Now in ${client.guilds.cache.size} guilds` })
+					.setFooter({ text: `Total guilds: ${client.guilds.cache.size}` })
 			]
 		})
 	})
