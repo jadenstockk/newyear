@@ -53,28 +53,30 @@ module.exports = (client: Client) => {
 				"Command Handler: " + (command.name || "Unknown Command")
 			)
 
-			await interaction.reply({
-				embeds: [
-					new EmbedBuilder()
-						.setColor("Red")
-						.setAuthor({
-							name: `Uh oh! Something went wrong.`,
-							iconURL: client.emojis.cache.get(crossEmoji)?.url
-						})
-						.setDescription(
-							"Please try again or join our support server for assistance"
+			await interaction
+				.reply({
+					embeds: [
+						new EmbedBuilder()
+							.setColor("Red")
+							.setAuthor({
+								name: `Uh oh! Something went wrong.`,
+								iconURL: client.emojis.cache.get(crossEmoji)?.url
+							})
+							.setDescription(
+								"Please try again or join our support server for assistance"
+							)
+					],
+					components: [
+						new ActionRowBuilder<ButtonBuilder>().addComponents(
+							new ButtonBuilder()
+								.setLabel("Join Support Server")
+								.setURL("https://discord.gg/4C5BQRm7uE")
+								.setStyle(ButtonStyle.Link)
 						)
-				],
-				components: [
-					new ActionRowBuilder<ButtonBuilder>().addComponents(
-						new ButtonBuilder()
-							.setLabel("Join Support Server")
-							.setURL("https://discord.gg/4C5BQRm7uE")
-							.setStyle(ButtonStyle.Link)
-					)
-				],
-				ephemeral: true
-			})
+					],
+					ephemeral: true
+				})
+				.catch((err) => console.log(err))
 		}
 	})
 }

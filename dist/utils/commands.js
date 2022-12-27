@@ -49,7 +49,8 @@ module.exports = (client) => {
         catch (err) {
             console.error(err);
             (0, logError_1.default)(err || "Unknown error in commands", "Command Handler: " + (command.name || "Unknown Command"));
-            yield interaction.reply({
+            yield interaction
+                .reply({
                 embeds: [
                     new discord_js_1.EmbedBuilder()
                         .setColor("Red")
@@ -66,7 +67,8 @@ module.exports = (client) => {
                         .setStyle(discord_js_1.ButtonStyle.Link))
                 ],
                 ephemeral: true
-            });
+            })
+                .catch((err) => console.log(err));
         }
     }));
 };
