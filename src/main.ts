@@ -45,6 +45,7 @@ client.once("ready", async () => {
 	console.log(`Online in ${client.guilds.cache.size} guilds`)
 	require("./utils/commands")(client)
 	require("./utils/countdownUpdater")(client)
+	require("./utils/topGG")(client)
 
 	client.on("guildCreate", (guild) => {
 		console.log("Added to guild... Total guilds:" + client.guilds.cache.size)
@@ -64,7 +65,9 @@ client.once("ready", async () => {
 	})
 
 	client.on("guildDelete", (guild) => {
-		console.log("Removed from guild... Total guilds:" + client.guilds.cache.size)
+		console.log(
+			"Removed from guild... Total guilds:" + client.guilds.cache.size
+		)
 
 		const logsWebhook = new WebhookClient({ url: process.env.LOGS_WEBHOOK! })
 		logsWebhook.send({

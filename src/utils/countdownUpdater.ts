@@ -28,6 +28,8 @@ module.exports = (client: Client) => {
 					return
 				}
 
+				if (!guild.channels.cache.get(data.countdown.channelId)) return
+
 				const ch = await guild.channels.fetch(data.countdown.channelId)
 
 				if (!ch || ch.type !== ChannelType.GuildText) {

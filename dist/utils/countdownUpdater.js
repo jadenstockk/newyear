@@ -37,6 +37,8 @@ module.exports = (client) => {
                     if (!guild) {
                         return;
                     }
+                    if (!guild.channels.cache.get(data.countdown.channelId))
+                        return;
                     const ch = yield guild.channels.fetch(data.countdown.channelId);
                     if (!ch || ch.type !== discord_js_1.ChannelType.GuildText) {
                         data.countdown = undefined;
