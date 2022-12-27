@@ -30,7 +30,7 @@ module.exports = (client: Client) => {
 
 				if (!guild.channels.cache.get(data.countdown.channelId)) return
 
-				const ch = await guild.channels.fetch(data.countdown.channelId)
+				const ch = await guild?.channels?.fetch(data.countdown.channelId)
 
 				if (!ch || ch.type !== ChannelType.GuildText) {
 					data.countdown = undefined
@@ -48,7 +48,9 @@ module.exports = (client: Client) => {
 				)
 					return
 
-				const msgs = await ch.messages.fetch()
+				const msgs = await ch?.messages
+					?.fetch()
+					.catch((err) => console.log(err))
 				if (!msgs) return
 				const message = await msgs.get(data.countdown.messageId)?.edit({
 					embeds: [await generateCountdown(client, data.timezone)]
@@ -59,7 +61,9 @@ module.exports = (client: Client) => {
 
 				if (!message) {
 					// Send the initial countdown message and update the guild data
-					const msg = await ch.send({ embeds: [countdown] })
+					const msg = await ch
+						.send({ embeds: [countdown] })
+						.catch((err) => console.log(err))
 					if (!msg) return
 
 					data.countdown = {

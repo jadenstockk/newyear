@@ -114,7 +114,7 @@ module.exports = {
 
 			// Function that updates the countdown channel and sends the initial countdown
 			async function sendInitialCountdown(channelId: string) {
-				const fetchedChannel = await interaction.guild?.channels.fetch(
+				const fetchedChannel = await interaction.guild?.channels?.fetch(
 					channelId
 				)
 
@@ -146,14 +146,18 @@ module.exports = {
 					errorMessage.embeds[0].setDescription(
 						"Try again after checking that New Year has the correct permissions or go to our support server for further assistance"
 					)
-					return await interaction.reply(errorMessage)
+					return await interaction
+						.reply(errorMessage)
+						.catch((err) => console.log(err))
 
 					// If the channel is not text based
 				} else if (!fetchedChannel.isTextBased()) {
 					errorMessage.embeds[0].setDescription(
 						"The channel you entered doesn't seem to be a 'text channel' which is required for the countdown. Choose a different channel or go to our support server for further assistance."
 					)
-					return await interaction.reply(errorMessage)
+					return await interaction
+						.reply(errorMessage)
+						.catch((err) => console.log(err))
 
 					// If the fetched channel is a text channel
 				} else {
@@ -164,7 +168,43 @@ module.exports = {
 					)
 
 					// Send the initial countdown message and update the guild data
-					const msg = await fetchedChannel.send({ embeds: [countdown] })
+					const msg = await fetchedChannel
+						.send({ embeds: [countdown] })
+						.catch((err) => console.log(err))
+
+					if (!msg || !msg.id) {
+						return await interaction
+							.reply({
+								embeds: [
+									new EmbedBuilder()
+										.setAuthor({
+											name: `It seems something went wrong`,
+											iconURL:
+												interaction.client.emojis.cache.get(crossEmoji)?.url ||
+												interaction.client.user.displayAvatarURL()
+										})
+										.setColor("Red")
+										.setDescription(
+											"It's usually something to do with missing permissions. Make sure that New Year has the correct permissions (as well as channel permissions) and try again. If the problem persists, contact us on our support server for further assistance."
+										)
+										.addFields({
+											name: "Required Permissions",
+											value:
+												"`VIEW CHANNELS`\n`SEND MESSAGES`\n`MANAGE MESSAGES`\n`VIEW CHANNELS`\n`EMBED LINKS`"
+										})
+								],
+								components: [
+									new ActionRowBuilder<ButtonBuilder>().addComponents(
+										new ButtonBuilder()
+											.setLabel("Join Support Server")
+											.setURL("https://discord.gg/4C5BQRm7uE")
+											.setStyle(ButtonStyle.Link)
+									)
+								],
+								ephemeral: true
+							})
+							.catch((err) => console.log(err))
+					}
 					data.countdown = {
 						channelId: fetchedChannel.id,
 						messageId: msg.id,

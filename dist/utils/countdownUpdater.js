@@ -27,7 +27,7 @@ module.exports = (client) => {
             try {
                 const guilds = yield Guild_1.default.find();
                 guilds.forEach((data) => __awaiter(this, void 0, void 0, function* () {
-                    var _a, _b;
+                    var _a, _b, _c, _d;
                     if (!data.guildId ||
                         !data.countdown ||
                         !data.countdown.channelId ||
@@ -39,27 +39,29 @@ module.exports = (client) => {
                     }
                     if (!guild.channels.cache.get(data.countdown.channelId))
                         return;
-                    const ch = yield guild.channels.fetch(data.countdown.channelId);
+                    const ch = yield ((_a = guild === null || guild === void 0 ? void 0 : guild.channels) === null || _a === void 0 ? void 0 : _a.fetch(data.countdown.channelId));
                     if (!ch || ch.type !== discord_js_1.ChannelType.GuildText) {
                         data.countdown = undefined;
                         return yield data.save();
                     }
-                    if (!((_a = ch
-                        .permissionsFor(guild.members.me)) === null || _a === void 0 ? void 0 : _a.has(discord_js_1.PermissionFlagsBits.SendMessages &&
+                    if (!((_b = ch
+                        .permissionsFor(guild.members.me)) === null || _b === void 0 ? void 0 : _b.has(discord_js_1.PermissionFlagsBits.SendMessages &&
                         discord_js_1.PermissionFlagsBits.EmbedLinks &&
                         discord_js_1.PermissionFlagsBits.ViewChannel)))
                         return;
-                    const msgs = yield ch.messages.fetch();
+                    const msgs = yield ((_c = ch === null || ch === void 0 ? void 0 : ch.messages) === null || _c === void 0 ? void 0 : _c.fetch().catch((err) => console.log(err)));
                     if (!msgs)
                         return;
-                    const message = yield ((_b = msgs.get(data.countdown.messageId)) === null || _b === void 0 ? void 0 : _b.edit({
+                    const message = yield ((_d = msgs.get(data.countdown.messageId)) === null || _d === void 0 ? void 0 : _d.edit({
                         embeds: [yield (0, countdownGenerator_1.generateCountdown)(client, data.timezone)]
                     }));
                     // Generate the countdown message
                     const countdown = yield (0, countdownGenerator_1.generateCountdown)(client, data.timezone);
                     if (!message) {
                         // Send the initial countdown message and update the guild data
-                        const msg = yield ch.send({ embeds: [countdown] });
+                        const msg = yield ch
+                            .send({ embeds: [countdown] })
+                            .catch((err) => console.log(err));
                         if (!msg)
                             return;
                         data.countdown = {

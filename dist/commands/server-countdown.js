@@ -91,16 +91,16 @@ module.exports = {
             }
             // Function that updates the countdown channel and sends the initial countdown
             function sendInitialCountdown(channelId) {
-                var _a, _b;
+                var _a, _b, _c, _d;
                 return __awaiter(this, void 0, void 0, function* () {
-                    const fetchedChannel = yield ((_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.channels.fetch(channelId));
+                    const fetchedChannel = yield ((_b = (_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.channels) === null || _b === void 0 ? void 0 : _b.fetch(channelId));
                     // Set an error message
                     let errorMessage = {
                         embeds: [
                             new discord_js_1.EmbedBuilder()
                                 .setAuthor({
                                 name: `There was a problem when setting up the countdown channel`,
-                                iconURL: ((_b = interaction.client.emojis.cache.get(constants_1.crossEmoji)) === null || _b === void 0 ? void 0 : _b.url) ||
+                                iconURL: ((_c = interaction.client.emojis.cache.get(constants_1.crossEmoji)) === null || _c === void 0 ? void 0 : _c.url) ||
                                     interaction.client.user.displayAvatarURL()
                             })
                                 .setColor("Red")
@@ -116,19 +116,52 @@ module.exports = {
                     // If the channel could not be fetched
                     if (!fetchedChannel) {
                         errorMessage.embeds[0].setDescription("Try again after checking that New Year has the correct permissions or go to our support server for further assistance");
-                        return yield interaction.reply(errorMessage);
+                        return yield interaction
+                            .reply(errorMessage)
+                            .catch((err) => console.log(err));
                         // If the channel is not text based
                     }
                     else if (!fetchedChannel.isTextBased()) {
                         errorMessage.embeds[0].setDescription("The channel you entered doesn't seem to be a 'text channel' which is required for the countdown. Choose a different channel or go to our support server for further assistance.");
-                        return yield interaction.reply(errorMessage);
+                        return yield interaction
+                            .reply(errorMessage)
+                            .catch((err) => console.log(err));
                         // If the fetched channel is a text channel
                     }
                     else {
                         // Generate the countdown message
                         const countdown = yield (0, countdownGenerator_1.generateCountdown)(interaction.client, data.timezone);
                         // Send the initial countdown message and update the guild data
-                        const msg = yield fetchedChannel.send({ embeds: [countdown] });
+                        const msg = yield fetchedChannel
+                            .send({ embeds: [countdown] })
+                            .catch((err) => console.log(err));
+                        if (!msg || !msg.id) {
+                            return yield interaction
+                                .reply({
+                                embeds: [
+                                    new discord_js_1.EmbedBuilder()
+                                        .setAuthor({
+                                        name: `It seems something went wrong`,
+                                        iconURL: ((_d = interaction.client.emojis.cache.get(constants_1.crossEmoji)) === null || _d === void 0 ? void 0 : _d.url) ||
+                                            interaction.client.user.displayAvatarURL()
+                                    })
+                                        .setColor("Red")
+                                        .setDescription("It's usually something to do with missing permissions. Make sure that New Year has the correct permissions (as well as channel permissions) and try again. If the problem persists, contact us on our support server for further assistance.")
+                                        .addFields({
+                                        name: "Required Permissions",
+                                        value: "`VIEW CHANNELS`\n`SEND MESSAGES`\n`MANAGE MESSAGES`\n`VIEW CHANNELS`\n`EMBED LINKS`"
+                                    })
+                                ],
+                                components: [
+                                    new discord_js_1.ActionRowBuilder().addComponents(new discord_js_1.ButtonBuilder()
+                                        .setLabel("Join Support Server")
+                                        .setURL("https://discord.gg/4C5BQRm7uE")
+                                        .setStyle(discord_js_1.ButtonStyle.Link))
+                                ],
+                                ephemeral: true
+                            })
+                                .catch((err) => console.log(err));
+                        }
                         data.countdown = {
                             channelId: fetchedChannel.id,
                             messageId: msg.id,
