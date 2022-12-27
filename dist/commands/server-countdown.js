@@ -224,7 +224,8 @@ module.exports = {
         }
         catch (err) {
             console.log(err);
-            return yield interaction.reply({
+            return yield interaction
+                .reply({
                 embeds: [
                     new discord_js_1.EmbedBuilder()
                         .setAuthor({
@@ -246,7 +247,8 @@ module.exports = {
                         .setStyle(discord_js_1.ButtonStyle.Link))
                 ],
                 ephemeral: true
-            });
+            })
+                .catch((err) => console.log(err));
         }
     })
 };

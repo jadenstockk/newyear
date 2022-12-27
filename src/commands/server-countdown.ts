@@ -271,35 +271,37 @@ module.exports = {
 			return await interaction.reply(successEmbedMessage)
 		} catch (err) {
 			console.log(err)
-			return await interaction.reply({
-				embeds: [
-					new EmbedBuilder()
-						.setAuthor({
-							name: `It seems something went wrong`,
-							iconURL:
-								interaction.client.emojis.cache.get(crossEmoji)?.url ||
-								interaction.client.user.displayAvatarURL()
-						})
-						.setColor("Red")
-						.setDescription(
-							"It's usually something to do with missing permissions. Make sure that New Year has the correct permissions (as well as channel permissions) and try again. If the problem persists, contact us on our support server for further assistance."
+			return await interaction
+				.reply({
+					embeds: [
+						new EmbedBuilder()
+							.setAuthor({
+								name: `It seems something went wrong`,
+								iconURL:
+									interaction.client.emojis.cache.get(crossEmoji)?.url ||
+									interaction.client.user.displayAvatarURL()
+							})
+							.setColor("Red")
+							.setDescription(
+								"It's usually something to do with missing permissions. Make sure that New Year has the correct permissions (as well as channel permissions) and try again. If the problem persists, contact us on our support server for further assistance."
+							)
+							.addFields({
+								name: "Required Permissions",
+								value:
+									"`VIEW CHANNELS`\n`SEND MESSAGES`\n`MANAGE MESSAGES`\n`VIEW CHANNELS`\n`EMBED LINKS`"
+							})
+					],
+					components: [
+						new ActionRowBuilder<ButtonBuilder>().addComponents(
+							new ButtonBuilder()
+								.setLabel("Join Support Server")
+								.setURL("https://discord.gg/4C5BQRm7uE")
+								.setStyle(ButtonStyle.Link)
 						)
-						.addFields({
-							name: "Required Permissions",
-							value:
-								"`VIEW CHANNELS`\n`SEND MESSAGES`\n`MANAGE MESSAGES`\n`VIEW CHANNELS`\n`EMBED LINKS`"
-						})
-				],
-				components: [
-					new ActionRowBuilder<ButtonBuilder>().addComponents(
-						new ButtonBuilder()
-							.setLabel("Join Support Server")
-							.setURL("https://discord.gg/4C5BQRm7uE")
-							.setStyle(ButtonStyle.Link)
-					)
-				],
-				ephemeral: true
-			})
+					],
+					ephemeral: true
+				})
+				.catch((err) => console.log(err))
 		}
 	}
 }
